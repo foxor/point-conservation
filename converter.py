@@ -3,7 +3,6 @@
 # files contain:
 # name1 name2 score1 score2
 
-ITERATIONS = 20
 START_SCORE = 5
 
 def score(rankings, name):
@@ -42,20 +41,37 @@ def process_file(fptr):
       rankings[player] = new_rank
 
     rankings = dict([(x, sum(season[x].values()) / len(season[x])) for x in season])
-  return rankings
+  return rankings, season, matches
 
-def print_rankings(rankings):
-  for n,r in enumerate(sorted([(x, rankings[x]) for x in rankings], key=lambda x:-x[1])):
-    print "<p>%d: %s with %.2f points</p>" %(n+1, r[0], r[1])
+def won(name, match):
+  return ((name == match[0]) == (match[2] > match[3]))
+
+def other_name(name, match):
+  return match[0] if name == match[1] else match[1]
+
+def more_info(name, rank, info, matches):
+  r = ["""<div class="emphasis"><h4>Match History:</h3>"""]
+  wins = 0
+  for player_number, match_number in enumerate(sorted(info)):
+    match = matches[match_number]
+    r.append("""<p>%d: %s vs %s %s - %s &mdash; <span style="color:%s">%+.2f points</span></p>""" % (player_number, "won" if won(name, match) else "lost", other_name(name, match), match[2], match[3], "green" if info[match_number] > rank else "red", info[match_number] - rank))
+    wins += 1 if won(name, match) else 0
+  r.append("<h4>Record: %d and %d (%.2f%%)</h4>" % (wins, len(info.keys()) - wins, 100.0 * wins / len(info.keys())))
+  r.append("</div>")
+  return ''.join(r)
+
+def print_rankings(rankings, season, matches):
+  for n,r in enumerate(sorted([(x, rankings[x], more_info(x, rankings[x], season[x], matches)) for x in rankings], key=lambda x:-x[1])):
+    print "<div class='swap'>%d: %s with %.2f points [<a href='#' class='swap_button'>+</a>]<div class='closed'>%s</div></div><div style='clear:both'></div>" %(n+1, r[0], r[1], r[2])
 
 if __name__ == '__main__':
   #print "trying to open file...<br/>"
   import sys
   try:
     fptr = open(sys.argv[1], 'r')
-    rankings = process_file(fptr)
+    rankings, season, matches = process_file(fptr)
     if rankings:
-      print_rankings(rankings)
+      print_rankings(rankings, season, matches)
     else:
       print "<p>Nobody has played yet</p>"
   except Exception, e:
