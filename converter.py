@@ -3,6 +3,9 @@
 # files contain:
 # name1 name2 score1 score2
 
+import itertools
+from optparse import OptionParser
+
 START_SCORE = 5
 
 def score(rankings, name):
@@ -68,19 +71,30 @@ def print_rankings(rankings, season, matches):
     print "<p>Nobody has played yet</p>"
 
 def strings_to_html(strings):
-  rankings, season, matches = process_file(fptr)
+  rankings, season, matches = process_file(strings)
   print_rankings(rankings, season, matches)
+
+def files_to_strings(files, filters=None):
+  if not filters:
+    filters = lambda x: True
+  return list(y for y in itertools.chain(*[[z.strip() for z in x] for x in files]) if filters(y))
 
 if __name__ == '__main__':
   #print "trying to open file...<br/>"
-  import sys, os
+  #import pdb;pdb.set_trace()
   try:
-    if not os.path.exists(sys.argv[1]):
-      open(sys.argv[1], 'w').close()
-    fptr = open(sys.argv[1], 'r')
-    strings_to_html(fptr)
+    parser = OptionParser()
+    parser.add_option("-f", "--files",
+      dest="files", help="a comma seperated list of input files to parse", default=[])
+    parser.add_option("-s", "--suffixes",
+      dest="suffixes", help="a comma seperated list of suffixes to accept", default=None)
+    (options, args) = parser.parse_args()
+    fptrs = [open(fptr, 'r') for fptr in options.files.split(',')]
+    strings_to_html(files_to_strings(fptrs))
   except Exception, e:
     import sys
-    print sys.exc_info()
+    import traceback
+    print traceback.format_exc(sys.exc_info()[2]).replace('\n','<br />')
+    print sys.exc_info(), e
   finally:
-    fptr.close()
+    [fptr.close() for fptr in fptrs]

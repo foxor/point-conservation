@@ -1,3 +1,6 @@
+<?php
+$tournament = 'lolapps-h2gini';
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
@@ -30,7 +33,7 @@
 <div id="content">
 <h1>Rankings:</h1>
 <?php
-system('./converter.py input/lolapps2');
+system('./converter.py -f input/'.$tournament);
 ?>
 <h1 style="margin-top: 30px;">Submit Results:</h1>
 <form action="submit.php" method="GET">
@@ -38,7 +41,7 @@ system('./converter.py input/lolapps2');
 <p><label>Your Opponent's Name: <input name="name2" type="text" /></label></p>
 <p><label>Your Score: <input name="score1" type="text" /></label></p>
 <p><label>Your Opponent's score: <input name="score2" type="text" /></label></p>
-<p style="display: none"><label>Tournament: <input name="tournament" type="text" value="lolapps2" /></label></p>
+<p style="display: none"><label>Tournament: <input name="tournament" type="text" value="<?php echo $tournament; ?>" /></label></p>
 <input type="submit" />
 </form>
 <h1 style="margin-top: 30px;">Previous Matches:</h1>
@@ -49,7 +52,7 @@ system('./converter.py input/lolapps2');
 #bash: \<br\\/\>
 #php: \<br\\\\/\>
 #why does this only with with 5, not 4?
-system('cat input/lolapps2 | sed s/$/\<br\\\\\/\>/');
+system('cat input/'.$tournament.' | sed s/$/\<br\\\\\/\>/');
 ?>
 </div> 
 <!-- credit where credit is due --!> 
