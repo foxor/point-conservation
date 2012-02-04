@@ -50,30 +50,37 @@ def other_name(name, match):
   return match[0] if name == match[1] else match[1]
 
 def more_info(name, rank, info, matches):
-  r = ["""<div class="emphasis"><h4>Match History:</h3>"""]
+  r = ["""<div><h4>Match History:</h3>"""]
   wins = 0
   for player_number, match_number in enumerate(sorted(info)):
     match = matches[match_number]
-    r.append("""<p>%d: %s vs %s %s - %s &mdash; <span style="color:%s">%+.2f points</span></p>""" % (player_number, "won" if won(name, match) else "lost", other_name(name, match), match[2], match[3], "green" if info[match_number] > rank else "red", info[match_number] - rank))
+    r.append("""<p>%d: %s vs %s %s - %s &mdash; <span style="color:%s">%+.4f points</span></p>""" % (player_number, "won" if won(name, match) else "lost", other_name(name, match), match[2], match[3], "green" if info[match_number] > rank else "red", info[match_number] - rank))
     wins += 1 if won(name, match) else 0
-  r.append("<h4>Record: %d and %d (%.2f%%)</h4>" % (wins, len(info.keys()) - wins, 100.0 * wins / len(info.keys())))
+  r.append("<h4>Record: %.6f points &mdash; %d and %d (%.2f%%)</h4>" % (rank, wins, len(info.keys()) - wins, 100.0 * wins / len(info.keys())))
   r.append("</div>")
   return ''.join(r)
 
 def print_rankings(rankings, season, matches):
-  for n,r in enumerate(sorted([(x, rankings[x], more_info(x, rankings[x], season[x], matches)) for x in rankings], key=lambda x:-x[1])):
-    print "<div class='swap'>%d: %s with %.2f points [<a href='#' class='swap_button'>+</a>]<div class='closed'>%s</div></div><div style='clear:both'></div>" %(n+1, r[0], r[1], r[2])
+  if rankings:
+    for n,r in enumerate(sorted([(x, rankings[x], more_info(x, rankings[x], season[x], matches)) for x in rankings], key=lambda x:-x[1])):
+      print "<div class='swap'>%d: %s with %.2f points [<a href='#' class='swap_button'>+</a>]<div style='clear:both'></div><div class='closed'>%s</div></div><div style='clear:both'></div>" %(n+1, r[0], r[1], r[2])
+  else:
+    print "<p>Nobody has played yet</p>"
+
+def strings_to_html(strings):
+  rankings, season, matches = process_file(fptr)
+  print_rankings(rankings, season, matches)
 
 if __name__ == '__main__':
   #print "trying to open file...<br/>"
-  import sys
+  import sys, os
   try:
+    if not os.path.exists(sys.argv[1]):
+      open(sys.argv[1], 'w').close()
     fptr = open(sys.argv[1], 'r')
-    rankings, season, matches = process_file(fptr)
-    if rankings:
-      print_rankings(rankings, season, matches)
-    else:
-      print "<p>Nobody has played yet</p>"
+    strings_to_html(fptr)
   except Exception, e:
     import sys
     print sys.exc_info()
+  finally:
+    fptr.close()
