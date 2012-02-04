@@ -3,8 +3,9 @@
 # files contain:
 # name1 name2 score1 score2
 
-import itertools
 from optparse import OptionParser
+import itertools
+import re
 
 START_SCORE = 5
 
@@ -90,7 +91,11 @@ if __name__ == '__main__':
       dest="suffixes", help="a comma seperated list of suffixes to accept", default=None)
     (options, args) = parser.parse_args()
     fptrs = [open(fptr, 'r') for fptr in options.files.split(',')]
-    strings_to_html(files_to_strings(fptrs))
+    filters = options.suffixes
+    if filters:
+      regexp = re.compile('^.*_(%s)$' % '|'.join([re.escape(filter) for filter in filters.split(',')]))
+      filters = lambda match: all(map(lambda name: regexp.match(name), match.split(' ')[:2]))
+    strings_to_html(files_to_strings(fptrs, filters))
   except Exception, e:
     import sys
     import traceback

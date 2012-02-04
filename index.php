@@ -1,8 +1,10 @@
 <?php
+$tournament = "hybrid_DKA";
+$path = "input/".$tournament;
 $tournaments = array(
-  'Draft' => array("draft", "input/hybrid_DKA"),
-  'Hybrid' => array("draft,sealed", "input/hybrid_DKA"),
-  'Sealed' => array("sealed", "input/hybrid_DKA")
+  'Draft' => array("draft", $path),
+  'Hybrid' => array("draft,sealed", $path),
+  'Sealed' => array("sealed", $path)
 );
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
@@ -36,6 +38,7 @@ $tournaments = array(
 </ul> 
 <div id="content">
 <h1 style="margin-top: 30px;">Submit Results:</h1>
+<p>Please remember to put _sealed or _draft after each player's name</p>
 <form action="submit.php" method="GET">
 <p><label>Your Name: <input name="name1" type="text" /></label></p>
 <p><label>Your Opponent's Name: <input name="name2" type="text" /></label></p>

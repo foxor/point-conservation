@@ -15,6 +15,5 @@ if (!fwrite($fptr, $_GET['name1']." ".$_GET['name2']." ".$_GET["score1"]." ".$_G
 }
 fclose($fptr);
 //echo "shelling out to converter.py for new rankings...<br/>";
-system('./converter.py input/'.$_GET['tournament']);
 header( 'Location: /point_conservation');
 ?>
