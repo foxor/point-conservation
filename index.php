@@ -1,5 +1,9 @@
 <?php
-$tournament = 'lolapps-h2gini';
+$tournaments = array(
+  'Draft' => array("draft", "input/hybrid_DKA"),
+  'Hybrid' => array("draft,sealed", "input/hybrid_DKA"),
+  'Sealed' => array("sealed", "input/hybrid_DKA")
+);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml"> 
@@ -31,10 +35,6 @@ $tournament = 'lolapps-h2gini';
   <li><a href="/contact">Info</a></li> 
 </ul> 
 <div id="content">
-<h1>Rankings:</h1>
-<?php
-system('./converter.py -f input/'.$tournament);
-?>
 <h1 style="margin-top: 30px;">Submit Results:</h1>
 <form action="submit.php" method="GET">
 <p><label>Your Name: <input name="name1" type="text" /></label></p>
@@ -44,17 +44,28 @@ system('./converter.py -f input/'.$tournament);
 <p style="display: none"><label>Tournament: <input name="tournament" type="text" value="<?php echo $tournament; ?>" /></label></p>
 <input type="submit" />
 </form>
-<h1 style="margin-top: 30px;">Previous Matches:</h1>
-<?php
-#slashes are escaped by php, bash and sed, < and > are escaped by sed
-#intent: <br/>
-#sed: \<br\/\>
-#bash: \<br\\/\>
-#php: \<br\\\\/\>
-#why does this only with with 5, not 4?
-system('cat input/'.$tournament.' | sed s/$/\<br\\\\\/\>/');
-?>
-</div> 
+<?php foreach ($tournaments as $name => $description) {
+  $suffixes = $description[0];
+  $files = $description[1];
+  ?>
+  <div float='left' style="width: <?php echo sprintf("%d", 850.0 / count($tournaments)) ?>px; display: inline-block">
+  <h1><?php echo $name ?> Rankings:</h1>
+  
+  <?php
+  system('./converter.py -f '.$files.' -s '.$suffixes);
+  ?>
+  <h1 style="margin-top: 30px;">Previous Matches:</h1>
+  <?php
+  #slashes are escaped by php, bash and sed, < and > are escaped by sed
+  #intent: <br/>
+  #sed: \<br\/\>
+  #bash: \<br\\/\>
+  #php: \<br\\\\/\>
+  #why does this only with with 5, not 4?
+  system('cat input/'.$tournament.' | sed s/$/\<br\\\\\/\>/');
+  ?>
+  </div> 
+<?php } ?>
 <!-- credit where credit is due --!> 
 <div class="clear"></div> 
 <p class="footer"><a href="http://www.webdesignerwall.com/tutorials/css3-dropdown-menu/">CSS3 Dropdown Menu</a> <em>by</em> <a href="http://www.webdesignerwall.com">Web Designer Wall</a></p> 
