@@ -75,10 +75,12 @@ def strings_to_html(strings):
   rankings, season, matches = process_file(strings)
   print_rankings(rankings, season, matches)
 
-def files_to_strings(files, filters=None):
+def files_to_strings(files, filters=None, remove=None):
   if not filters:
     filters = lambda x: True
-  return list(y for y in itertools.chain(*[[z.strip() for z in x] for x in files]) if filters(y))
+  if not remove:
+    remove = lambda x: x
+  return list(remove(y) for y in itertools.chain(*[[z.strip() for z in x] for x in files]) if filters(y))
 
 if __name__ == '__main__':
   #print "trying to open file...<br/>"
@@ -93,9 +95,10 @@ if __name__ == '__main__':
     fptrs = [open(fptr, 'r') for fptr in options.files.split(',')]
     filters = options.suffixes
     if filters:
-      regexp = re.compile('^.*_(%s)$' % '|'.join([re.escape(filter) for filter in filters.split(',')]))
+      regexp = re.compile('^(.*)_(%s)$' % '|'.join([re.escape(filter) for filter in filters.split(',')]))
       filters = lambda match: all(map(lambda name: regexp.match(name), match.split(' ')[:2]))
-    strings_to_html(files_to_strings(fptrs, filters))
+      remove = lambda match: ' '.join(re.sub(regexp, r"\1", x) for x in match.split(' '))
+    strings_to_html(files_to_strings(fptrs, filters, remove))
   except Exception, e:
     import sys
     import traceback
