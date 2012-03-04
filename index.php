@@ -57,18 +57,20 @@ $tournaments = array(
   <?php
   system('./converter.py -f '.$files.' -s '.$suffixes);
   ?>
-  <h1 style="margin-top: 30px;">Previous Matches:</h1>
-  <?php
-  #slashes are escaped by php, bash and sed, < and > are escaped by sed
-  #intent: <br/>
-  #sed: \<br\/\>
-  #bash: \<br\\/\>
-  #php: \<br\\\\/\>
-  #why does this only with with 5, not 4?
-  system('cat input/'.$tournament.' | sed s/$/\<br\\\\\/\>/');
-  ?>
   </div> 
 <?php } ?>
+<div style="width: <?php echo sprintf("%d", 850.0 / count($tournaments)) ?>px; position: relative; left: <?php echo sprintf("%d", 850.0 / count($tournaments)) ?>px; display: inline-block">
+<h1 style="margin-top: 30px;">Previous Matches:</h1>
+<?php
+#slashes are escaped by php, bash and sed, < and > are escaped by sed
+#intent: <br/>
+#sed: \<br\/\>
+#bash: \<br\\/\>
+#php: \<br\\\\/\>
+#why does this only with with 5, not 4?
+system('cat input/'.$tournament.' | sed s/$/\<br\\\\\/\>/');
+?>
+</div>
 <!-- credit where credit is due --!> 
 <div class="clear"></div> 
 <p class="footer"><a href="http://www.webdesignerwall.com/tutorials/css3-dropdown-menu/">CSS3 Dropdown Menu</a> <em>by</em> <a href="http://www.webdesignerwall.com">Web Designer Wall</a></p> 
